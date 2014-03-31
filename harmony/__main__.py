@@ -64,6 +64,16 @@ def show_current_activity(args):
     client.disconnect(send_close=True)
     return 0
 
+def sync(args):
+    """Connects to the Harmony and syncs it.
+    """
+    client = get_client(args)
+
+    client.sync()
+
+    client.disconnect(send_close=True)
+    return 0
+
 def start_activity(args):
     """Connects to the Harmony and switches to a different activity,
     specified as an id or label."""
@@ -130,6 +140,11 @@ def main():
         'activity', help='Activity to switch to, id or label.')
 
     start_activity_parser.set_defaults(func=start_activity)
+
+    sync_parser = subparsers.add_parser(
+        'sync', help='Sync the harmony.')
+
+    sync_parser.set_defaults(func=sync)
 
     args = parser.parse_args()
 
