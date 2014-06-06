@@ -74,6 +74,12 @@ def sync(args):
     client.disconnect(send_close=True)
     return 0
 
+def turn_off(args):
+    """Sends a 'turn off' command to the harmony, which is the activity
+    '-1'."""
+    args.activity = '-1'
+    start_activity(args)
+
 def start_activity(args):
     """Connects to the Harmony and switches to a different activity,
     specified as an id or label."""
@@ -81,10 +87,13 @@ def start_activity(args):
 
     config = client.get_config()
 
-    activity = [x for x in config['activity']
-        if (args.activity.isdigit() and int(x['id']) == int(args.activity))
-            or x['label'].lower() == args.activity.lower()
-    ]
+    if args.activity == '-1' or args.activity.lower() == 'turn off':
+        activity = [ {'id': -1, 'label': 'Turn Off'} ]
+    else:
+        activity = [x for x in config['activity']
+            if (args.activity.isdigit() and int(x['id']) == int(args.activity))
+                or x['label'].lower() == args.activity.lower()
+        ]
 
     if not activity:
         LOGGER.error('could not find activity: ' + args.activity)
@@ -145,6 +154,11 @@ def main():
         'sync', help='Sync the harmony.')
 
     sync_parser.set_defaults(func=sync)
+
+    turn_off_parser = subparsers.add_parser(
+        'turn_off', help='Send a turn off command to the harmony.')
+
+    turn_off_parser.set_defaults(func=turn_off)
 
     args = parser.parse_args()
 

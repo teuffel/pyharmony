@@ -38,6 +38,9 @@ Some other commands you can invoke via command line:
     PYTHONPATH="." python harmony --email user@example.com --password pass \
         --harmony_ip my_hub_host show_current_activity
 
+    PYTHONPATH="." python harmony --email user@example.com --password pass \
+        --harmony_ip my_hub_host turn_off
+
 For full argument information on the command-line tool:
 
     PYTHONPATH="." python harmony --help
