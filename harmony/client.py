@@ -89,6 +89,21 @@ class HarmonyClient(sleekxmpp.ClientXMPP):
         action_cmd = payload[0]
         return action_cmd.text
 
+    def send_command(self, device_id, command):
+        """Send a simple command to the Harmony Hub.
+        """
+        iq_cmd = self.Iq()
+        iq_cmd['type'] = 'get'
+        iq_cmd['id'] = '5e518d07-bcc2-4634-ba3d-c20f338d8927-2'
+        action_cmd = ET.Element('oa')
+        action_cmd.attrib['xmlns'] = 'connect.logitech.com'
+        action_cmd.attrib['mime'] = (
+            'vnd.logitech.harmony/vnd.logitech.harmony.engine?holdAction')
+        action_cmd.text = 'action={"type"::"IRCommand","deviceId"::"'+device_id+'","command"::"'+command+'"}:status=press'
+        iq_cmd.set_payload(action_cmd)
+        result = iq_cmd.send(block=False)
+        return True
+
     def turn_off(self):
         """Turns the system off if it's on, otherwise it does nothing.
 

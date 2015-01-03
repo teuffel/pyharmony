@@ -42,6 +42,16 @@ def show_config(args):
     return 0
 
 
+def send_command(args):
+    """Connects to the Harmony and send a simple command."""
+    token = login_to_logitech(args)
+    client = harmony_client.create_and_connect_client(
+        args.harmony_ip, args.harmony_port, token)
+    pprint.pprint(client.send_command(args.device_id, args.command))
+    client.disconnect(send_close=True)
+    return 0
+
+
 def main():
     """Main method for the script."""
     parser = argparse.ArgumentParser(
@@ -69,6 +79,13 @@ def main():
     list_devices_parser = subparsers.add_parser(
         'show_config', help='Print the Harmony device configuration.')
     list_devices_parser.set_defaults(func=show_config)
+    command_parser = subparsers.add_parser(
+        'send_command', help='Send a simple command.')
+    command_parser.add_argument('--device_id',
+        help='Specify the device id to which we will send the command.')
+    command_parser.add_argument('--command',
+        help='IR Command to send to the device.')
+    command_parser.set_defaults(func=send_command)
 
     args = parser.parse_args()
 
