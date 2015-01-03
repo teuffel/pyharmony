@@ -41,6 +41,13 @@ Some other commands you can invoke via command line:
     PYTHONPATH="." python harmony --email user@example.com --password pass \
         --harmony_ip my_hub_host turn_off
 
+    # to send device commands, look in show_config for the device and
+    # command name, you can use either the device id or label with --device
+    #
+    PYTHONPATH="." python harmony --email user@example.com --password pass \
+        --harmony_ip my_hub_host send_command --device 'yamaha soundbar' \
+        --command PowerToggle
+
 For full argument information on the command-line tool:
 
     PYTHONPATH="." python harmony --help

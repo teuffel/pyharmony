@@ -104,7 +104,7 @@ def start_activity(args):
 
     client.start_activity(activity['id'])
 
-    LOGGER.info("started activity: '%s' of id: '%s'"%(activity['label'], activity['id']))
+    LOGGER.info("started activity: '%s' of id: '%s'" % (activity['label'], activity['id']))
 
     client.disconnect(send_close=True)
     return 0
@@ -113,7 +113,27 @@ def send_command(args):
     """Connects to the Harmony and send a simple command."""
     client = get_client(args)
 
-    client.send_command(args.device_id, args.command)
+    config = client.get_config()
+
+    device = args.device if args.device_id is None else args.device_id
+
+    device_numeric = None
+    try:
+        device_numeric = int(device)
+    except:
+        pass
+
+    device_config = [x for x in config['device'] if device.lower() == x['label'].lower() or
+                  ((not device_numeric is None) and int(device_numeric) == int(x['id']))]
+
+    if not device_config:
+        LOGGER.error('could not find device: ' + device)
+        client.disconnect(send_close=True)
+        return 1
+
+    device_id = int(device_config[0]['id'])
+
+    client.send_command(device_id, args.command)
 
     client.disconnect(send_close=True)
     return 0
@@ -173,11 +193,16 @@ def main():
     command_parser = subparsers.add_parser(
         'send_command', help='Send a simple command.')
 
-    command_parser.add_argument('--device_id',
+    command_parser.add_argument('--command',
+        help='IR Command to send to the device.', required=True)
+
+    device_arg_group = command_parser.add_mutually_exclusive_group(required=True)
+
+    device_arg_group.add_argument('--device_id',
         help='Specify the device id to which we will send the command.')
 
-    command_parser.add_argument('--command',
-        help='IR Command to send to the device.')
+    device_arg_group.add_argument('--device',
+        help='Specify the device id or label to which we will send the command.')
 
     command_parser.set_defaults(func=send_command)
 

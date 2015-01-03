@@ -112,9 +112,13 @@ class HarmonyClient(sleekxmpp.ClientXMPP):
         action_cmd.attrib['xmlns'] = 'connect.logitech.com'
         action_cmd.attrib['mime'] = (
             'vnd.logitech.harmony/vnd.logitech.harmony.engine?holdAction')
-        action_cmd.text = 'action={"type"::"IRCommand","deviceId"::"'+device_id+'","command"::"'+command+'"}:status=press'
+        action_cmd.text = 'action={"type"::"IRCommand","deviceId"::"'+str(device_id)+'","command"::"'+command+'"}:status=press'
         iq_cmd.set_payload(action_cmd)
         result = iq_cmd.send(block=False)
+        # FIXME: This is an ugly hack, we need to follow the actual
+        # protocol for sending a command, since block=True does not
+        # work.
+        time.sleep(0.5)
         return True
 
     def turn_off(self):
