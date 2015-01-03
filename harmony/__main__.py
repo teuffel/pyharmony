@@ -109,6 +109,15 @@ def start_activity(args):
     client.disconnect(send_close=True)
     return 0
 
+def send_command(args):
+    """Connects to the Harmony and send a simple command."""
+    client = get_client(args)
+
+    client.send_command(args.device_id, args.command)
+
+    client.disconnect(send_close=True)
+    return 0
+
 def main():
     """Main method for the script."""
     parser = argparse.ArgumentParser(
@@ -136,6 +145,7 @@ def main():
 
     show_config_parser = subparsers.add_parser(
         'show_config', help='Print the Harmony device configuration.')
+
     show_config_parser.set_defaults(func=show_config)
 
     show_activity_parser = subparsers.add_parser(
@@ -159,6 +169,17 @@ def main():
         'turn_off', help='Send a turn off command to the harmony.')
 
     turn_off_parser.set_defaults(func=turn_off)
+
+    command_parser = subparsers.add_parser(
+        'send_command', help='Send a simple command.')
+
+    command_parser.add_argument('--device_id',
+        help='Specify the device id to which we will send the command.')
+
+    command_parser.add_argument('--command',
+        help='IR Command to send to the device.')
+
+    command_parser.set_defaults(func=send_command)
 
     args = parser.parse_args()
 
