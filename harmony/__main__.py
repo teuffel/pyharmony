@@ -87,12 +87,24 @@ def start_activity(args):
 
     config = client.get_config()
 
-    if args.activity == '-1' or args.activity.lower() == 'turn off':
+    activity_off     = False
+    activity_numeric = False
+    activity_id      = None
+    activity_label   = None
+    try:
+        activity_off     = float(args.activity) == -1
+        activity_id      = int(float(args.activity))
+        activity_numeric = True
+    except ValueError:
+        activity_off   = args.activity.lower() == 'turn off'
+        activity_label = str(args.activity)
+
+    if activity_off:
         activity = [ {'id': -1, 'label': 'Turn Off'} ]
     else:
         activity = [x for x in config['activity']
-            if (args.activity.isdigit() and int(x['id']) == int(args.activity))
-                or x['label'].lower() == args.activity.lower()
+            if (activity_numeric and int(x['id']) == activity_id)
+                or x['label'].lower() == activity_label
         ]
 
     if not activity:
@@ -102,7 +114,7 @@ def start_activity(args):
 
     activity = activity[0]
 
-    client.start_activity(activity['id'])
+    client.start_activity(int(activity['id']))
 
     LOGGER.info("started activity: '%s' of id: '%s'" % (activity['label'], activity['id']))
 
@@ -119,12 +131,12 @@ def send_command(args):
 
     device_numeric = None
     try:
-        device_numeric = int(device)
-    except:
+        device_numeric = int(float(device))
+    except ValueError:
         pass
 
     device_config = [x for x in config['device'] if device.lower() == x['label'].lower() or
-                  ((not device_numeric is None) and int(device_numeric) == int(x['id']))]
+                  ((device_numeric is not None) and device_numeric == int(x['id']))]
 
     if not device_config:
         LOGGER.error('could not find device: ' + device)
