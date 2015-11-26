@@ -128,9 +128,9 @@ class HarmonyClient(sleekxmpp.ClientXMPP):
           True.
         """
         activity = self.get_current_activity()
-        print activity
+        print(activity)
         if activity != -1:
-            print "OFF"
+            print("OFF")
             self.start_activity(-1)
         return True
 
